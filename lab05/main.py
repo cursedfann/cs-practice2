@@ -40,8 +40,8 @@ def main():
 
     # Выводим три требуемых числа.
     print(total)
-    print(counts["ERROR"])
-    print(counts["BROKEN"])
+    print(counts.get("ERROR", 0))
+    print(counts.get("BROKEN", 0))
 
     report = format_report(counts, errors)
 

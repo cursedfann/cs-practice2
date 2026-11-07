@@ -21,20 +21,22 @@ def parse_event(line: str) -> dict:
     }
 
 
+
 def count_levels(lines: list[str]) -> dict:
-    """Считает количество строк каждого уровня."""
-    counts = {level: 0 for level in LEVELS}
-    counts["BROKEN"] = 0
+    """Считает количество записей по уровням."""
+    counts = {}
 
     for line in lines:
         try:
             event = parse_event(line)
         except (ValueError, TypeError):
-            counts["BROKEN"] += 1
+            counts["BROKEN"] = counts.get("BROKEN", 0) + 1
         else:
-            counts[event["level"]] += 1
+            level = event["level"]
+            counts[level] = counts.get(level, 0) + 1
 
     return counts
+
 
 
 def top_errors(lines: list[str], n: int) -> list:
@@ -59,14 +61,14 @@ def top_errors(lines: list[str], n: int) -> list:
     return [[message, count] for message, count in result[:max(0, n)]]
 
 
-def format_report(counts: dict, errors: list) -> str:
-    """Формирует текст отчёта."""
-    order = ("BROKEN", "DEBUG", "ERROR", "INFO", "WARNING")
 
+
+def format_report(counts: dict, errors: list) -> str:
+    """Формирует текстовый отчёт."""
     lines = ["Отчёт по журналу", ""]
 
-    for level in order:
-        lines.append(f"{level}: {counts.get(level, 0)}")
+    for level, count in counts.items():
+        lines.append(f"{level}: {count}")
 
     lines.extend(["", "Частые ошибки:"])
 
@@ -74,3 +76,5 @@ def format_report(counts: dict, errors: list) -> str:
         lines.append(f"- {message} — {count}")
 
     return "\n".join(lines) + "\n"
+
+
